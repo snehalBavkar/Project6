@@ -1,0 +1,70 @@
+#importing Packages
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import LabelEncoder
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
+import pandas as pd
+import numpy as np
+#from sklearn.datasets import load_iris
+
+#load dataset
+df =pd.read_csv("C:/Users/Home/Documents/SNEHAL BAVKAR/test.csv")
+print(df)
+
+#Creating Instance
+rf=RandomForestClassifier()
+dropList= ['IsHoliday','Date']
+
+#x and y values
+x=df.drop(dropList,axis=1)
+#x= pd.DataFrame(np.c_[df['fixedDate  acidity'],df['pH'],df['chlorides'],df['residual sugar'],df['free sulfur dioxide']],columns=['fixed acidity','pH','chlorides','residual sugar','free sulfur dioxide'])
+y=df['IsHoliday']
+
+
+#Encoding Features
+from sklearn.preprocessing import  LabelEncoder
+le=LabelEncoder()
+le.fit(y)
+
+y=le.fit_transform(y)
+
+#Traning and Testing
+x_train,x_test,y_train,y_test=train_test_split(x,y,random_state=0,test_size=0.3)
+rf.fit(x_train,y_train)
+
+# Predection and Error
+y_pred=rf.predict(x_test)
+print("Mean Squared Error : ",np.sqrt(mean_squared_error(y_test,y_pred)))
+
+
+#feature selection
+from sklearn.ensemble import ExtraTreesClassifier
+import matplotlib.pyplot as plt
+model = ExtraTreesClassifier()
+model.fit(x,y)
+print(model.feature_importances_)
+feat_imp = pd.Series(model.feature_importances_,index=x.columns)
+feat_imp.nlargest(5).plot(kind='barh')
+plt.show()
+
+#OUTPUT
+'''
+C:\Users\Home\PycharmProjects\DataScience\venv\Scripts\python.exe C:/Users/Home/PycharmProjects/DataScience/Walmart_Dataset.py
+        Store  Dept        Date  IsHoliday
+0           1     1  2012-11-02      False
+1           1     1  2012-11-09      False
+2           1     1  2012-11-16      False
+3           1     1  2012-11-23       True
+4           1     1  2012-11-30      False
+...       ...   ...         ...        ...
+115059     45    98  2013-06-28      False
+115060     45    98  2013-07-05      False
+115061     45    98  2013-07-12      False
+115062     45    98  2013-07-19      False
+115063     45    98  2013-07-26      False
+
+[115064 rows x 4 columns]
+Mean Squared Error :  0.2786326487596326
+[0.34307699 0.65692301]
+
+'''
